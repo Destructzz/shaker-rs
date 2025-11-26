@@ -83,4 +83,20 @@ impl Shaker {
 
         return Ok(());
     }
+
+    fn send_move(&mut self, dx: i32, dy: i32) -> Result<()> {
+        if dx > 120 || dy > 120{
+            return Err(ShakerError::PositionOverflow);
+        }
+
+        match &mut self.serial_port {
+            Some(s_port) => {
+                s_port.write_all(format!("MOVE {} {}\r\n", dx, dy).as_bytes())?;
+            }
+            None => {
+                return Err(ShakerError::NoSerialPort);
+            }
+        }
+        return Ok(());
+    }
 }
