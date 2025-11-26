@@ -76,17 +76,34 @@ impl Shaker {
         Ok(port)
     }
 
-    fn process(&self, dx: i32, dy: i32) -> Result<()> {
-        if dx > 5000 || dy > 5000 {}
-        let dx_count = CONTROLLER_RATE / dx;
+    fn process(&mut self, dx: i32, dy: i32) -> Result<()> {
+        if dx > 5000 || dy > 5000 {
+            return Err(ShakerError::PositionNormalOverflow);
+        }
+        let dx_count: i32 = CONTROLLER_RATE / dx;
         let dy_count: i32 = CONTROLLER_RATE / dy;
+
+        if dx_count == dy_count{
+            for i in 0..dx_count{
+                self.send_move(120, 120)?;
+            }
+            self.send_move(CONTROLLER_RATE % dx, CONTROLLER_RATE % dy)?;
+        }else{
+            let lowest : i32; 
+            if dx < dy{
+                lowest = dx;
+            }else {
+                lowest = dy;
+            }
+        }
+
 
         return Ok(());
     }
 
     fn send_move(&mut self, dx: i32, dy: i32) -> Result<()> {
         if dx > 120 || dy > 120{
-            return Err(ShakerError::PositionOverflow);
+            return Err(ShakerError::PositionBytesOverflow);
         }
 
         match &mut self.serial_port {

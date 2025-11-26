@@ -10,6 +10,8 @@ pub enum ShakerError {
     IOWriting(#[from] std::io::Error),
     #[error("Serial port doesn't exist")]
     NoSerialPort,
-    #[error("overflow dx or dy variables")]
-    PositionOverflow,
+    #[error("overflow bytes dx or dy variables for arduino input")]
+    PositionBytesOverflow,
+    #[error("overflow varible dx or dy for maximum")]
+    PositionNormalOverflow,
 }
