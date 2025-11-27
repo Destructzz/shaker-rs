@@ -1,8 +1,7 @@
 use std::time::Duration;
-use thiserror::Error;
 
 use serialport::{
-    DataBits, Error, FlowControl, Parity, SerialPort, SerialPortType, StopBits, available_ports,
+    DataBits, FlowControl, Parity, SerialPort, SerialPortType, StopBits, available_ports,
 };
 
 use crate::errors::ShakerError;
@@ -91,6 +90,11 @@ impl Shaker {
         if dx > 5000 || dy > 5000 {
             return Err(ShakerError::PositionNormalOverflow);
         }
+
+        if dx == 0 || dy == 0 {
+            return Ok(());
+        }
+
         let dx_count: i32 = CONTROLLER_RATE / dx;
         let dy_count: i32 = CONTROLLER_RATE / dy;
 
@@ -127,18 +131,6 @@ impl Shaker {
             }
         }
         Ok(())
-    }
-
-    // Функция для вычисления НОД (алгоритм Евклида)
-    fn gcd(mut a: i32, mut b: i32) -> i32 {
-        a = a.abs();
-        b = b.abs();
-        while b != 0 {
-            let temp = b;
-            b = a % b;
-            a = temp;
-        }
-        a
     }
 
     fn send_move(&mut self, dx: i32, dy: i32) -> Result<()> {
